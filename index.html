@@ -403,6 +403,29 @@
   .leaguecard .lctxt small{font-size:11px;opacity:.9;font-weight:600}
   .leaguecard .lcgo{font-size:26px;font-weight:800;opacity:.85;flex:none}
   .startnote{text-align:center;font-size:10.5px;font-weight:700;color:var(--muted);margin-top:18px;letter-spacing:.3px}
+
+  /* ===== Evolución ===== */
+  .evobtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:14px;
+    background:var(--chip);border:1px solid var(--line);color:var(--blue-2);border-radius:14px;
+    padding:12px;font-family:inherit;font-weight:800;font-size:12.5px;cursor:pointer;box-shadow:var(--shadow)}
+  .evobtn svg{width:17px;height:17px}
+  .evoseg{display:flex;background:var(--chip);border:1px solid var(--line);border-radius:14px;padding:3px;margin-bottom:10px}
+  .evoseg button{flex:1;border:0;background:none;font-family:inherit;font-weight:800;font-size:12.5px;color:var(--muted);padding:9px 6px;border-radius:11px;cursor:pointer;transition:.18s}
+  .evoseg button.on{background:var(--card);color:var(--blue-2);box-shadow:var(--shadow)}
+  .evoseg.small{width:auto;display:inline-flex;margin-bottom:12px}
+  .evoseg.small button{font-size:11px;padding:7px 14px}
+  .evocard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 12px 10px;box-shadow:var(--shadow);margin-bottom:12px}
+  .evoctitle{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:0 2px 8px;display:flex;justify-content:space-between;gap:8px}
+  .evoctitle b{color:var(--ink);font-weight:800;text-transform:none;letter-spacing:0;font-size:12px;text-align:right}
+  .evochart{width:100%;height:auto;display:block;overflow:visible}
+  .evohint{font-size:10.5px;color:var(--muted);font-weight:600;text-align:center;margin:2px 4px;line-height:1.5}
+  .evobulk{display:flex;align-items:center;gap:8px;margin:2px 2px 8px;flex-wrap:wrap}
+  .evobulk .lbl{font-size:11px;font-weight:800;color:var(--muted);margin-right:auto}
+  .evobulk button{background:var(--chip);border:1px solid var(--line);color:var(--blue-2);border-radius:10px;font-size:10.5px;font-weight:800;padding:6px 11px;cursor:pointer;font-family:inherit}
+  .evolegend{display:flex;flex-wrap:wrap;gap:6px}
+  .evolg{display:flex;align-items:center;gap:6px;background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:5px 10px 5px 8px;font-size:10.5px;font-weight:800;color:var(--ink);cursor:pointer;transition:.12s;user-select:none}
+  .evolg .evodot{width:9px;height:9px;border-radius:50%;flex:none}
+  .evolg.off{opacity:.34}
 </style>
 </head>
 <body class="noTabs">
@@ -496,6 +519,7 @@
       <div class="leg"><span><i style="background:#16a34a"></i>Campeón</span><span><i style="background:#e11d2a"></i>Descenso (últimos 4)</span></div>
       <div class="tblwrap"><table><thead><tr><th>P</th><th class="l">Equipo</th><th>Pts</th><th>J</th><th>G</th><th>E</th><th>P</th><th>F</th><th>C</th><th>Últimos</th></tr></thead>
       <tbody id="tbl"></tbody></table></div>
+      <button class="evobtn" onclick="openEvo('clas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M19 7l-5 6-3-3-4 5"/></svg> Ver evolución por jornada</button>
     </div>
 
     <!-- ============ CALENDARIO ============ -->
@@ -514,6 +538,7 @@
       <h2><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/><path d="M12 6l2 4 4 .5-3 3 .8 4.2L12 15.8 8.2 17.7 9 13.5 6 10.5l4-.5z"/></svg> Goleadores</h2>
       <p class="sub">Máximos goleadores del grupo · fcf.cat</p>
       <div id="golBody"></div>
+      <button class="evobtn" onclick="openEvo('gol')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M19 7l-5 6-3-3-4 5"/></svg> Ver evolución de goleadores</button>
     </div>
 
     <!-- ============ FICHA DE EQUIPO ============ -->
@@ -530,6 +555,32 @@
       <div id="tplayers"></div>
       <div class="sec-title">Partidos</div>
       <div id="tmatches"></div>
+    </div>
+
+    <!-- ============ EVOLUCIÓN ============ -->
+    <div class="view" id="view-evolucion">
+      <button class="back" onclick="go(evoFrom||'clasificacion')">‹ Volver</button>
+      <h2><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M19 7l-5 6-3-3-4 5"/></svg> Evolución</h2>
+      <div class="evoseg" id="evoMain">
+        <button data-v="clas" class="on" onclick="evoSetView('clas')">Clasificación</button>
+        <button data-v="gol" onclick="evoSetView('gol')">Goleadores</button>
+      </div>
+      <div class="evoseg small" id="evoSub">
+        <button data-m="pos" class="on" onclick="evoSetMode('pos')">Posición</button>
+        <button data-m="pts" onclick="evoSetMode('pts')">Puntos</button>
+      </div>
+      <div class="evocard">
+        <div class="evoctitle"><span id="evoKicker"></span><b id="evoLead"></b></div>
+        <svg class="evochart" id="evoChart" viewBox="0 0 360 250" preserveAspectRatio="xMidYMid meet"></svg>
+        <div class="evohint" id="evoHint"></div>
+      </div>
+      <div class="evobulk">
+        <span class="lbl" id="evoBulkLbl"></span>
+        <button onclick="evoBulk('all')">Todos</button>
+        <button onclick="evoBulk('none')">Ninguno</button>
+        <button onclick="evoBulk('top')">Top</button>
+      </div>
+      <div class="evolegend" id="evoLegend"></div>
     </div>
 
   </div></div>
@@ -1083,6 +1134,113 @@ function renderGoleadores(){
   }
 }
 
+/* ===================== EVOLUCIÓN (calculada de los datos reales) ===================== */
+let evoFrom='clasificacion';
+const evoState={view:'clas',mode:'pos',hidden:{},clas:null,gol:null,golLoading:false};
+function evoPlayedJornadas(){ return [...new Set(FIX.filter(isPlayed).map(m=>m.j))].sort((a,b)=>a-b); }
+function evoStandingsUpTo(N){
+  const played=FIX.filter(m=>isPlayed(m)&&m.j<=N);
+  const R=TEAMS.map((t,i)=>({i,pj:0,g:0,e:0,p:0,gf:0,gc:0,pts:0}));
+  played.forEach(m=>{const H=R[m.h],A=R[m.a];H.pj++;A.pj++;H.gf+=m.gh;H.gc+=m.ga;A.gf+=m.ga;A.gc+=m.gh;
+    if(m.gh>m.ga){H.g++;H.pts+=3;A.p++;}else if(m.gh<m.ga){A.g++;A.pts+=3;H.p++;}else{H.e++;A.e++;H.pts++;A.pts++;}});
+  return {order:fcfClassify(R,played),R};
+}
+function evoComputeClas(){
+  const js=evoPlayedJornadas(); if(!js.length) return null;
+  const pos=TEAMS.map(()=>[]), pts=TEAMS.map(()=>[]);
+  js.forEach(N=>{const {order,R}=evoStandingsUpTo(N);
+    order.forEach((r,idx)=>pos[r.i].push(idx+1)); R.forEach(r=>pts[r.i].push(r.pts));});
+  const series=TEAMS.map((t,i)=>({id:'t'+i,i,name:t[0],abbr:t[2],color:t[3],pos:pos[i],pts:pts[i],last:pos[i][pos[i].length-1]}));
+  return {js,series};
+}
+function evoInitials(name){const p=(''+name).trim().split(/\s+/);return (p[0]?p[0][0]:'')+'.'+((p[p.length-1]||'').slice(0,3));}
+async function evoComputeGol(){
+  const played=FIX.filter(isPlayed), js=evoPlayedJornadas(); if(!js.length) return null;
+  const actas=await Promise.all(played.map(m=>loadActa(m.act).then(a=>({m,a})).catch(()=>({m,a:null}))));
+  const P={};
+  actas.forEach(({m,a})=>{ if(!a)return;
+    const tally=(arr,ti)=>{(arr||[]).forEach(gl=>{const id=(gl.id_jugador||gl.nombre_jugador||'?')+'';
+      if(!P[id])P[id]={name:prettyName(gl.nombre_jugador||''),team:ti,per:{}};
+      P[id].per[m.j]=(P[id].per[m.j]||0)+1;});};
+    tally(a.goles_equipo_local,m.h); tally(a.goles_equipo_visitante,m.a);
+  });
+  const players=Object.keys(P).map(id=>{const p=P[id];let c=0;const cum=js.map(j=>{c+=(p.per[j]||0);return c;});
+    return {id:'g'+id,name:p.name,abbr:evoInitials(p.name),color:(TEAMS[p.team]?TEAMS[p.team][3]:'#1e5bff'),goals:cum,total:c};})
+    .sort((a,b)=>b.total-a.total).slice(0,20).map((p,k)=>({...p,rank:k}));
+  return {js,players};
+}
+function evoDefaultHidden(){
+  evoState.hidden={};
+  if(evoState.view==='clas'){const d=evoState.clas; if(d){const byPos=[...d.series].sort((a,b)=>a.last-b.last);
+    d.series.forEach(s=>{ if(byPos.indexOf(s)>=6) evoState.hidden[s.id]=true; });}}
+  else{const d=evoState.gol; if(d) d.players.forEach(p=>{ if(p.rank>=8) evoState.hidden[p.id]=true; });}
+}
+function evoAll(){ if(evoState.view==='gol'){return (evoState.gol&&evoState.gol.players)||[];} return (evoState.clas&&evoState.clas.series)||[]; }
+function evoActive(){
+  if(evoState.view==='gol') return evoAll().filter(p=>!evoState.hidden[p.id]).map(p=>({...p,vals:p.goals}));
+  return evoAll().filter(s=>!evoState.hidden[s.id]).map(s=>({...s,vals:evoState.mode==='pos'?s.pos:s.pts}));
+}
+const EVOPAD={l:26,r:46,t:14,b:26}, EVOVB={w:360,h:250};
+function evoDomain(active){
+  const inv=(evoState.view==='clas'&&evoState.mode==='pos'); let v=[]; active.forEach(s=>v=v.concat(s.vals)); if(!v.length)v=[0,1];
+  let min=Math.min(...v),max=Math.max(...v);
+  if(inv){min=Math.max(1,min-1);max=max+1;}else{min=0;max=max+Math.max(1,Math.round(max*0.12));}
+  return {min,max,inv};
+}
+function evoHead(){
+  const kick=document.getElementById('evoKicker'),lead=document.getElementById('evoLead'); if(!kick)return;
+  if(evoState.view==='gol'){kick.textContent='GOLES ACUMULADOS';const d=evoState.gol;lead.textContent=(d&&d.players[0])?('Pichichi: '+d.players[0].name+' ('+d.players[0].total+')'):'';}
+  else if(evoState.mode==='pos'){kick.textContent='POSICIÓN POR JORNADA';const d=evoState.clas;const l=d&&[...d.series].sort((a,b)=>a.last-b.last)[0];lead.textContent=l?('Líder: '+l.name):'';}
+  else{kick.textContent='PUNTOS ACUMULADOS';const d=evoState.clas;const l=d&&[...d.series].sort((a,b)=>b.pts[b.pts.length-1]-a.pts[a.pts.length-1])[0];lead.textContent=l?('Líder: '+l.name+' ('+l.pts[l.pts.length-1]+')'):'';}
+}
+function evoLegend(){
+  const box=document.getElementById('evoLegend'); if(!box)return; box.innerHTML='';
+  evoAll().forEach(s=>{const el=document.createElement('div');el.className='evolg'+(evoState.hidden[s.id]?' off':'');
+    el.innerHTML='<span class="evodot" style="background:'+s.color+'"></span>'+s.name;
+    el.onclick=()=>{evoState.hidden[s.id]=!evoState.hidden[s.id];evoRender();}; box.appendChild(el);});
+}
+function evoRender(){
+  const svg=document.getElementById('evoChart'); if(!svg)return;
+  const legend=document.getElementById('evoLegend'), hint=document.getElementById('evoHint'), bulkl=document.getElementById('evoBulkLbl');
+  if(evoState.view==='gol'&&evoState.golLoading){ svg.innerHTML='<text x="180" y="120" text-anchor="middle" font-size="12" font-weight="800" fill="var(--muted)">Cargando goles por jornada…</text>'; legend.innerHTML=''; hint.textContent=''; bulkl.textContent=''; evoHead(); return; }
+  const js=(evoState.view==='gol'?(evoState.gol&&evoState.gol.js):(evoState.clas&&evoState.clas.js))||[];
+  if(!js.length){ svg.innerHTML='<text x="180" y="120" text-anchor="middle" font-size="12" font-weight="800" fill="var(--muted)">Aún no hay jornadas jugadas</text>'; legend.innerHTML=''; hint.textContent=''; bulkl.textContent=''; evoHead(); return; }
+  const n=js.length, active=evoActive(), d=evoDomain(active);
+  const X=k=>EVOPAD.l+(n>1?k/(n-1):0.5)*(EVOVB.w-EVOPAD.l-EVOPAD.r);
+  const Y=val=>{const t=(val-d.min)/((d.max-d.min)||1),yT=EVOPAD.t,yB=EVOVB.h-EVOPAD.b;return d.inv?yT+t*(yB-yT):yB-t*(yB-yT);};
+  let g='';
+  for(let k=0;k<n;k++){const x=X(k);
+    g+='<line x1="'+x+'" y1="'+EVOPAD.t+'" x2="'+x+'" y2="'+(EVOVB.h-EVOPAD.b)+'" stroke="var(--line)" stroke-width="1" opacity=".6"/>';
+    g+='<text x="'+x+'" y="'+(EVOVB.h-EVOPAD.b+15)+'" text-anchor="middle" font-size="9.5" font-weight="800" fill="var(--muted)">J'+js[k]+'</text>';}
+  for(let i=0;i<=4;i++){const val=d.min+(i/4)*(d.max-d.min),y=Y(val);
+    const lbl=(evoState.view==='clas'&&evoState.mode==='pos')?Math.round(val)+'º':Math.round(val);
+    g+='<line x1="'+EVOPAD.l+'" y1="'+y+'" x2="'+(EVOVB.w-EVOPAD.r)+'" y2="'+y+'" stroke="var(--line)" stroke-width="1" opacity=".45"/>';
+    g+='<text x="'+(EVOPAD.l-6)+'" y="'+(y+3)+'" text-anchor="end" font-size="9" font-weight="700" fill="var(--muted)">'+lbl+'</text>';}
+  const ends=[];
+  active.forEach(s=>{const pts=s.vals.map((v,k)=>[X(k),Y(v)]);
+    const dl=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+    g+='<path d="'+dl+'" fill="none" stroke="'+s.color+'" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" opacity=".92"/>';
+    pts.forEach(p=>g+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="2.2" fill="var(--card)" stroke="'+s.color+'" stroke-width="1.8"/>');
+    ends.push({y:pts[pts.length-1][1],x:pts[pts.length-1][0],color:s.color,abbr:s.abbr});});
+  ends.sort((a,b)=>a.y-b.y); for(let i=1;i<ends.length;i++){ if(ends[i].y-ends[i-1].y<10) ends[i].y=ends[i-1].y+10; }
+  ends.forEach(e=>g+='<text x="'+(e.x+6)+'" y="'+(e.y+3)+'" font-size="8.5" font-weight="900" fill="'+e.color+'">'+e.abbr+'</text>');
+  svg.innerHTML=g;
+  hint.textContent=active.length+' de '+evoAll().length+' mostrados · toca abajo para encender/apagar';
+  bulkl.textContent=evoState.view==='clas'?(TEAMS.length+' equipos'):('Top '+evoAll().length+' goleadores');
+  evoHead(); evoLegend();
+}
+function evoBulk(w){ if(w==='all')evoAll().forEach(s=>delete evoState.hidden[s.id]); else if(w==='none')evoAll().forEach(s=>evoState.hidden[s.id]=true); else evoDefaultHidden(); evoRender(); }
+function evoSetMode(m){ evoState.mode=m; document.querySelectorAll('#evoSub button').forEach(b=>b.classList.toggle('on',b.dataset.m===m)); evoRender(); }
+function evoSetView(v){
+  evoState.view=v;
+  document.querySelectorAll('#evoMain button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  document.getElementById('evoSub').style.display=(v==='clas')?'inline-flex':'none';
+  if(v==='clas'){ evoState.clas=evoComputeClas(); evoDefaultHidden(); evoRender(); }
+  else if(evoState.gol){ evoDefaultHidden(); evoRender(); }
+  else { evoState.golLoading=true; evoRender(); evoComputeGol().then(d=>{evoState.gol=d;evoState.golLoading=false;evoDefaultHidden();evoRender();}).catch(()=>{evoState.golLoading=false;evoRender();}); }
+}
+function openEvo(v){ evoFrom=(v==='gol'?'goleadores':'clasificacion'); go('evolucion'); evoSetView(v||'clas'); }
+
 /* Modal de partido: resultado si jugado, marcador si en directo, si no "por determinar" */
 /* Fuerza de cada equipo a partir de los resultados REALES de esta temporada */
 function teamStrengths(){
@@ -1361,6 +1519,8 @@ function renderAll(){
   if(!userPickedJ) CURJ=currentJornada();
   renderHero();renderStandings();renderGoleadores();showJ(CURJ);
   if(CURTEAM!=null && document.getElementById('view-equipo').classList.contains('active')) renderTeam(CURTEAM); // ficha en vivo, sin mover el scroll
+  // Evolución en vivo (solo Clasificación, que es barata; conserva los equipos encendidos)
+  if(document.getElementById('view-evolucion').classList.contains('active') && evoState.view==='clas'){ evoState.clas=evoComputeClas(); evoRender(); }
 }
 /* Refresco adaptativo: rápido solo si hay partido en directo o a punto de empezar;
    cada 15 min en calma; y en pausa si la pestaña está en segundo plano. */
