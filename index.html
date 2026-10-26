@@ -1106,14 +1106,17 @@ function winProb(h,a,R){
 }
 /* Acta del partido (goleadores reales por equipo). Cache por CODACTA. */
 const ACTAS={};
+// Capitaliza respetando acentos y ñ/ç (Unicode), y tras espacio, apóstrofo o guion.
+const tcase=s=>(''+(s||'')).normalize('NFC').toLowerCase()
+  .replace(/(^|[\s'’.\-])(\p{L})/gu,(m,sep,ch)=>sep+ch.toUpperCase());
 function prettyName(s){
   s=(''+s).trim(); if(!s) return 'Jugador';
   let nom=s, ape=s;
   if(s.includes(',')){const p=s.split(',');ape=p[0].trim();nom=(p[1]||'').trim();}
-  else {return s.toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());}
+  else {return tcase(s);}
   const firstName=nom.split(/\s+/)[0]||'';
   const firstSurname=ape.split(/\s+/)[0]||'';
-  return (firstName+' '+firstSurname).toLowerCase().replace(/\b\w/g,c=>c.toUpperCase()).trim();
+  return tcase((firstName+' '+firstSurname).trim());
 }
 async function loadActa(cod){
   if(!cod) return null;
