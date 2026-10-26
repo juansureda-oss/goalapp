@@ -1315,9 +1315,11 @@ function buildChips(){
 async function fcf(path){const r=await fetch(CONFIG.PROXY+'?url='+encodeURIComponent('https://www.fcf.cat/api/competition/'+path),{cache:'no-store'});if(!r.ok)throw 0;return r.json();}
 async function refresh(){
   if(CONFIG.PROXY){try{
-    const part=await fcf('partidos?'+FCF_Q);
+    const resp=await fcf('partidos?'+FCF_Q);
+    // la API devuelve {partidos:{"1":[...],...}}; admitimos también el mapa directo
+    const part=(resp&&resp.partidos)?resp.partidos:resp;
     const nm=[];
-    Object.keys(part).forEach(j=>{(part[j]||[]).forEach(m=>{
+    Object.keys(part||{}).forEach(j=>{(Array.isArray(part[j])?part[j]:[]).forEach(m=>{
       const hi=name2idx(m.NOMBRE_CASA),ai=name2idx(m.NOMBRE_FUERA);
       if(hi>=0)CODE2IDX[m.CODEQUIPO_CASA]=hi;
       if(ai>=0)CODE2IDX[m.CODEQUIPO_FUERA]=ai;
@@ -1332,7 +1334,7 @@ async function refresh(){
   renderAll();
 }
 function parseScorers(raw){
-  const arr=(raw&&raw.data)||raw; if(!Array.isArray(arr)) return null;
+  const arr=(raw&&(raw.data||raw.goleadores))||raw; if(!Array.isArray(arr)) return null;
   const out=arr.map(s=>{
     let ti=CODE2IDX[s.codequipo];                 // 1) por código de equipo (fiable)
     if(ti==null && s.escudo){                      // 2) por nombre de archivo del escudo
