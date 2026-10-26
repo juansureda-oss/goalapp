@@ -1164,9 +1164,12 @@ async function evoComputeGol(){
       P[id].per[m.j]=(P[id].per[m.j]||0)+1;});};
     tally(a.goles_equipo_local,m.h); tally(a.goles_equipo_visitante,m.a);
   });
+  // Carrera del Pichichi: solo el top 8, cada uno con un color propio distinguible
+  const GOLPAL=['#1e5bff','#e11d2a','#16a34a','#f59e0b','#8e44ad','#0d9488','#db2777','#6b4f2a'];
   const players=Object.keys(P).map(id=>{const p=P[id];let c=0;const cum=js.map(j=>{c+=(p.per[j]||0);return c;});
-    return {id:'g'+id,name:p.name,abbr:evoInitials(p.name),color:(TEAMS[p.team]?TEAMS[p.team][3]:'#1e5bff'),goals:cum,total:c};})
-    .sort((a,b)=>b.total-a.total).slice(0,20).map((p,k)=>({...p,rank:k}));
+    return {name:p.name,club:(TEAMS[p.team]?TEAMS[p.team][0]:''),abbr:evoInitials(p.name),goals:cum,total:c};})
+    .sort((a,b)=>b.total-a.total).slice(0,8)
+    .map((p,k)=>({...p,id:'g'+k,rank:k,color:GOLPAL[k%GOLPAL.length]}));
   return {js,players};
 }
 function evoDefaultHidden(){
@@ -1196,7 +1199,7 @@ function evoHead(){
 function evoLegend(){
   const box=document.getElementById('evoLegend'); if(!box)return; box.innerHTML='';
   evoAll().forEach(s=>{const el=document.createElement('div');el.className='evolg'+(evoState.hidden[s.id]?' off':'');
-    el.innerHTML='<span class="evodot" style="background:'+s.color+'"></span>'+s.name;
+    el.innerHTML='<span class="evodot" style="background:'+s.color+'"></span>'+s.name+(s.club?' <small style="color:var(--muted);font-weight:700">· '+s.club+'</small>':'');
     el.onclick=()=>{evoState.hidden[s.id]=!evoState.hidden[s.id];evoRender();}; box.appendChild(el);});
 }
 function evoRender(){
